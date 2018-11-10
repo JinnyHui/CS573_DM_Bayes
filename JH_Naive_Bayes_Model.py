@@ -1,7 +1,7 @@
 #!/usr/bin/env python 3
-# Jingyi Hui, 11/04/2018
+# Jingyi Hui, 11/10/2018
 # CSCI573 Homework 3
-# Implementation of Bayes Classifier
+# Implementation of Naive Bayes Classifier
 # Training Part
 
 import numpy as np
@@ -78,21 +78,20 @@ def center_data(dictionary, mean_dict):
     return centered_dict
 
 
-def covariance_matrix(centered_dict):
+def variance(centered_dict):
     """
     compute the covariance matrix for each centered class
     :param centered_dict: centered dataset for each class
-    :return: covariance matrix for each centered class
+    :return: variance for each centered class
     """
-    cov_dict = {}
-    np.set_printoptions(threshold=np.inf)
+    variance_dict = {}
     for key in centered_dict:
-        cov_dict[key] = np.cov(centered_dict[key].astype(float).T)
-        cov_line, cov_column = cov_dict[key].shape
-        for m in range(cov_line):
-            cov_dict[key][m] = [np.around(n, 2) for n in cov_dict[key][m]]
-
-    return cov_dict
+        d = len(centered_dict[key][0])
+        variance_list = []
+        for index in range(d):
+            variance_list.append(np.var(centered_dict[key][:, index]))
+        variance_dict[key] = [np.around(j, 2) for j in variance_list]
+    return variance_dict
 
 
 if __name__ == '__main__':
@@ -104,18 +103,18 @@ if __name__ == '__main__':
     keys = set(dataframe.iloc[:, -1])
     dataset = np.array(dataframe)
     line, column = dataset.shape
-    class_dict = class_generator(dataset, line)
+    class_dict = class_generator(dataset, line)  # class-specific subsets
     # print(classdict['Iris-versicolor'])
     # print(classdict['Iris-virginica'])
     # print(classdict['Iris-setosa'])
-    cardin = cardinality(class_dict)
+    cardin = cardinality(class_dict)  # cardinality
     # print(cardin)
-    prior = prior_prob(cardin, line)
+    prior = prior_prob(cardin, line)  # prior prob
     # print(prior)
-    mean = sample_mean(class_dict)
+    mean = sample_mean(class_dict)  # mean
     # print(mean)
-    centered = center_data(class_dict, mean)
-    cov = covariance_matrix(centered)
+    centered = center_data(class_dict, mean)  # centered dataset
+    variance = variance(centered)  # variance
     print('Model has been calculated, please check the output file: model_bayes.csv')
 
     #################################################################################
@@ -126,15 +125,15 @@ if __name__ == '__main__':
         model_data = {}
         model_data['prior'] = prior[label]
         model_data['mean'] = mean[label]
-        model_data['cov'] = cov[label]
+        # model_data['cov'] = cov[label]
+        model_data['var'] = variance[label]
         model[label] = model_data
     print(model)
-
 
     #################################################################################
     # write the model to csv file
     #################################################################################
-    with open('model_bayes.csv', 'w') as file:
+    with open('model_naive_bayes.csv', 'w') as file:
         writer = csv.writer(file)
         # write for each class
         for key, value in model.items():

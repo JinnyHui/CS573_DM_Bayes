@@ -1,16 +1,15 @@
 #!/usr/bin/env python 3
-# Jingyi Hui, 11/04/2018
+# Jingyi Hui, 11/10/2018
 # CSCI573 Homework 3
-# Implementation of Bayes Classifier
+# Implementation of Naive Bayes Classifier
 # Perform 3-fold cross validation
-
 
 import numpy as np
 from numpy import array
 import pandas as pd
 import csv
-import JH_Bayes_Model
-import JH_Bayes_Test
+import JH_Naive_Bayes_Model
+import JH_Naive_Bayes_Test
 import operator
 
 
@@ -21,18 +20,18 @@ def train(train_set):
     :return: model parameters
     """
     line, column = train_set.shape
-    class_dict = JH_Bayes_Model.class_generator(train_set, line)
-    cardin = JH_Bayes_Model.cardinality(class_dict)
-    prior = JH_Bayes_Model.prior_prob(cardin, line)
-    mean = JH_Bayes_Model.sample_mean(class_dict)
-    centered = JH_Bayes_Model.center_data(class_dict, mean)
-    cov = JH_Bayes_Model.covariance_matrix(centered)
+    class_dict = JH_Naive_Bayes_Model.class_generator(train_set, line)
+    cardin = JH_Naive_Bayes_Model.cardinality(class_dict)
+    prior = JH_Naive_Bayes_Model.prior_prob(cardin, line)
+    mean = JH_Naive_Bayes_Model.sample_mean(class_dict)
+    centered = JH_Naive_Bayes_Model.center_data(class_dict, mean)
+    var = JH_Naive_Bayes_Model.variance(centered)
     model_3_fold = {}
     for label in keys:
         model_data = {}
         model_data['prior'] = prior[label]
         model_data['mean'] = mean[label]
-        model_data['cov'] = cov[label]
+        model_data['var'] = var[label]
         model_3_fold[label] = model_data
     return model_3_fold
 
@@ -47,7 +46,7 @@ def predict(test_set, model_3_fold):
     prediction_3_fold = []
     for instance in test_set:
         # print(instance)
-        prediction_3_fold.append(JH_Bayes_Test.predict(instance, model_3_fold))
+        prediction_3_fold.append(JH_Naive_Bayes_Test.predict(instance, model_3_fold))
     # print('Predicted Label List:')
     # print(prediction_3_fold, '\n')
     return prediction_3_fold
@@ -105,7 +104,7 @@ keys = set(total_dataframe.iloc[:, -1])
 model_one = train(np.concatenate((fold_one, fold_two)))
 # print(model_one)
 # write to csv file
-with open('Model_3_Fold_1.csv', 'w') as file1:
+with open('Model_Naive_3_Fold_1.csv', 'w') as file1:
     writer = csv.writer(file1)
     # write for each class
     for key, value in model_one.items():
@@ -119,7 +118,7 @@ prediction_one = predict(fold_three, model_one)
 model_two = train(np.concatenate((fold_one, fold_three)))
 # print(model_two)
 # write to csv file
-with open('Model_3_Fold_2.csv', 'w') as file2:
+with open('Model_Naive_3_Fold_2.csv', 'w') as file2:
     writer = csv.writer(file2)
     # write for each class
     for key, value in model_two.items():
@@ -133,7 +132,7 @@ prediction_two = predict(fold_two, model_two)
 model_three = train(np.concatenate((fold_two, fold_three)))
 # print(model_three)
 # write to csv file
-with open('Model_3_Fold_3.csv', 'w') as file3:
+with open('Model_Naive_3_Fold_3.csv', 'w') as file3:
     writer = csv.writer(file3)
     # write for each class
     for key, value in model_three.items():
@@ -149,7 +148,7 @@ prediction_three = predict(fold_one, model_three)
 # fold one
 label_one = fold_three[:, -1].tolist()
 print('##############################################################')
-print('                 CONFUSION MATRIX FOLD_ONE                    ')
+print('             CONFUSION MATRIX FOLD_ONE (Naive)                ')
 print('##############################################################')
 fold_one_evaluation = evaluate(prediction_one, label_one)
 accuracy_one, precision_one, recall_one, F_score_one = fold_one_evaluation
@@ -159,7 +158,7 @@ accuracy_one, precision_one, recall_one, F_score_one = fold_one_evaluation
 label_two = fold_two[:, -1].tolist()
 print('\n')
 print('##############################################################')
-print('                 CONFUSION MATRIX FOLD_TWO                    ')
+print('                 CONFUSION MATRIX FOLD_TWO (Naive)            ')
 print('##############################################################')
 fold_two_evaluation = evaluate(prediction_two, label_two)
 accuracy_two, precision_two, recall_two, F_score_two = fold_two_evaluation
@@ -169,7 +168,7 @@ accuracy_two, precision_two, recall_two, F_score_two = fold_two_evaluation
 label_three = fold_one[:, -1].tolist()
 print('\n')
 print('##############################################################')
-print('                CONFUSION MATRIX FOLD_THREE                   ')
+print('                CONFUSION MATRIX FOLD_THREE (Naive)           ')
 print('##############################################################')
 fold_three_evaluation = evaluate(prediction_three, label_three)
 accuracy_three, precision_three, recall_three, F_score_three = fold_three_evaluation
