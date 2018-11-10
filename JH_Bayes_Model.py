@@ -1,17 +1,28 @@
+#!/usr/bin/env python 3
+# Jingyi Hui, 11/04/2018
+# CSCI573 Homework 3
+# Implementation of Bayes Classifier
+# Training Part
+
 import numpy as np
 import pandas as pd
 import csv
 
-# def class_generator(dataset):
-#     """
-#     Generate class specific subsets from the dataset
-#     :param dataset: iris dataset with labels
-#     :return: a dict of list which contains data instance belong to different classes
-#     """
-#     classdict = {}
-#     class_label = set(dataset[:, -1])
-#     list_length = len(class_label)
-#     return classdict
+
+def class_generator(dataset):
+    """
+    Generate class specific subsets from the dataset
+    :param dataset: iris dataset with labels
+    :return: a dict of list which contains data instance belong to different classes
+    """
+    classdict = {}
+    for i in range(line):
+        class_label = dataset[i][-1]
+        if class_label in classdict:
+            classdict[class_label] = np.append(classdict[class_label], [dataset[i][:-1]], axis=0)
+        else:
+            classdict[class_label] = [dataset[i][:-1]]
+    return classdict
 
 
 def cardinality(dictionary):
@@ -72,44 +83,57 @@ def covariance_matrix(centered_dict):
     :return: covariance matrix for each centered class
     """
     cov_dict = {}
+    np.set_printoptions(threshold=np.inf)
     for key in centered_dict:
-        cov_dict[key] = np.cov(centered_dict[key])
+        cov_dict[key] = np.cov(centered_dict[key].astype(float).T)
+        cov_line, cov_column = cov_dict[key].shape
+        for m in range(cov_line):
+            cov_dict[key][m] = [np.around(n, 2) for n in cov_dict[key][m]]
+
     return cov_dict
 
 
-dataframe = pd.read_csv('iris.txt.shuffled', delimiter=',', header=None)
+###################################################################################
+# Start read in the data file
+###################################################################################
+file_name = 'train.csv'
+dataframe = pd.read_csv(file_name, delimiter=',', header=None)
+keys = set(dataframe.iloc[:, -1])
 dataset = np.array(dataframe)
 line, column = dataset.shape
-class_dict = {}
-for i in range(line):
-    class_label = dataset[i][-1]
-    if class_label in class_dict:
-        class_dict[class_label] = np.append(class_dict[class_label], [dataset[i][:-1]], axis=0)
-    else:
-        class_dict[class_label] = [dataset[i][:-1]]
+class_dict = class_generator(dataset)
 # print(classdict['Iris-versicolor'])
 # print(classdict['Iris-virginica'])
 # print(classdict['Iris-setosa'])
 cardin = cardinality(class_dict)
-print(cardin)
+# print(cardin)
 prior = prior_prob(cardin, line)
-print(prior)
+# print(prior)
 mean = sample_mean(class_dict)
-print(mean)
+# print(mean)
 centered = center_data(class_dict, mean)
 cov = covariance_matrix(centered)
+print('Model has been calculated, please check the output file: model_bayes.csv')
+
+#################################################################################
+# construct model dictionary
+#################################################################################
+model = {}
+for label in keys:
+    model_data = {}
+    model_data['prior'] = prior[label]
+    model_data['mean'] = mean[label]
+    model_data['cov'] = cov[label]
+    model[label] = model_data
+print(model)
+
+
 #################################################################################
 # write the model to csv file
 #################################################################################
-with open('model_bayes.csv') as file:
+with open('model_bayes.csv', 'w') as file:
     writer = csv.writer(file)
-    # write prior probability of each class
-    for key, value in prior.items():
-        writer.writerow([key, value])
-    # write mean of each class
-    for key, value in mean.items():
-        writer.writerow([key, value])
-    # write covariance matrix for each class
-    for key, value in cov.items():
+    # write for each class
+    for key, value in model.items():
         writer.writerow([key, value])
 file.close()
