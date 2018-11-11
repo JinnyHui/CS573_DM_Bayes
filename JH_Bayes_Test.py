@@ -54,7 +54,7 @@ if __name__ == '__main__':
     #################################################################################
     # load the test file
     #################################################################################
-    file_name = "test.csv"
+    file_name = 'iris.txt.shuffled'
     dataframe = pd.read_csv(file_name, delimiter=',', header=None)
     test_dataset = np.array(dataframe)
     dimension = test_dataset.shape[1] - 1

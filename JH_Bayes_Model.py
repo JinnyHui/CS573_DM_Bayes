@@ -99,7 +99,7 @@ if __name__ == '__main__':
     ###################################################################################
     # Start read in the data file
     ###################################################################################
-    file_name = 'train.csv'
+    file_name = 'iris.txt.shuffled'
     dataframe = pd.read_csv(file_name, delimiter=',', header=None)
     keys = set(dataframe.iloc[:, -1])
     dataset = np.array(dataframe)

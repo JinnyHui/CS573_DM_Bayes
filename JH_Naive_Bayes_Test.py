@@ -30,8 +30,8 @@ def predict(data, bayes):
         for d in range(dimension):
             var_attribute = model_data['var'][d]
             mean_attribute = model_data['mean'][d]
-            denominator = np.sqrt(2*np.pi) * var_attribute
-            exponent = - (data[d] - mean_attribute) ** 2 / (2 * (var_attribute ** 2))
+            denominator = np.sqrt(2 * np.pi * var_attribute)
+            exponent = - (data[d] - mean_attribute) ** 2 / (2 * var_attribute)
             likelihood *= (1/denominator) * np.exp(exponent)
         prior = float(model_data['prior'])
         posterior = likelihood * prior
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     #################################################################################
     # load the test file
     #################################################################################
-    file_name = "test.csv"
+    file_name = 'iris.txt.shuffled'
     dataframe = pd.read_csv(file_name, delimiter=',', header=None)
     test_dataset = np.array(dataframe)
     dimension = test_dataset.shape[1] - 1
