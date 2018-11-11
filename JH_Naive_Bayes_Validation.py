@@ -10,6 +10,7 @@ import pandas as pd
 import csv
 import JH_Naive_Bayes_Model
 import JH_Naive_Bayes_Test
+import sys
 import operator
 
 
@@ -82,7 +83,7 @@ def evaluate(prediction_3_fold, truth_label):
 #################################################################################
 # load the data file
 #################################################################################
-file_name = 'iris.txt.shuffled'
+file_name = sys.argv[1]
 total_dataframe = pd.read_csv(file_name, header=None)
 total_instance = len(total_dataframe)
 first_end = int(total_instance/3)

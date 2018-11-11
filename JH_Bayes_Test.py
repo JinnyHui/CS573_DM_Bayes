@@ -8,6 +8,7 @@ import numpy as np
 from numpy import array
 import pandas as pd
 import csv
+import sys
 import operator
 
 
@@ -46,7 +47,8 @@ if __name__ == '__main__':
     #################################################################################
     # load the model from file
     #################################################################################
-    with open('model_bayes.csv', 'r') as csv_file:
+    model_file = sys.argv[1]
+    with open(model_file, 'r') as csv_file:
         reader = csv.reader(csv_file)
         model = dict(reader)
         # print(model)
@@ -54,7 +56,7 @@ if __name__ == '__main__':
     #################################################################################
     # load the test file
     #################################################################################
-    file_name = 'iris.txt.shuffled'
+    file_name = sys.argv[2]
     dataframe = pd.read_csv(file_name, delimiter=',', header=None)
     test_dataset = np.array(dataframe)
     dimension = test_dataset.shape[1] - 1

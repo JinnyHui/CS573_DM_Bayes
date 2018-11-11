@@ -7,6 +7,7 @@
 import numpy as np
 import pandas as pd
 import csv
+import sys
 
 
 def class_generator(dataset, line):
@@ -98,7 +99,7 @@ if __name__ == '__main__':
     ###################################################################################
     # Start read in the data file
     ###################################################################################
-    file_name = 'iris.txt.shuffled'
+    file_name = sys.argv[1]
     dataframe = pd.read_csv(file_name, delimiter=',', header=None)
     keys = set(dataframe.iloc[:, -1])
     dataset = np.array(dataframe)
