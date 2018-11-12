@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3
+#!/usr/bin/env python3
 # Jingyi Hui, 11/04/2018
 # CSCI573 Homework 3
 # Implementation of Bayes Classifier
